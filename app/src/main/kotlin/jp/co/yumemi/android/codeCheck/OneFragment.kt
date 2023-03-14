@@ -16,6 +16,7 @@ import jp.co.yumemi.android.codeCheck.databinding.FragmentOneBinding
 
 class OneFragment : Fragment(R.layout.fragment_one) {
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -51,6 +52,7 @@ class OneFragment : Fragment(R.layout.fragment_one) {
             it.adapter = adapter
         }
     }
+
 
     fun gotoRepositoryFragment(item: Item) {
         val action = OneFragmentDirections
