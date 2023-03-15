@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 // Item ListのRecyclerViewのitemを処理する
 class ItemAdapter(
-    private val itemClickListener: OnItemClickListener
+    private val itemClickListener: (Item) -> Unit
 ) : ListAdapter<Item, ItemAdapter.ItemViewHolder>(diffUtil) {
 
     // ItemViewHolderはリストのitemにviewを作ってあげて、データを設定するために存在する
@@ -19,18 +19,15 @@ class ItemAdapter(
 
 
         // dataとviewと紐付け、Click Eventの処理関数を設定
-        fun bind(item: Item, itemClickListener: OnItemClickListener) {
+        fun bind(item: Item, itemClickListener: (Item) -> Unit) {
             repositoryNameView.text = item.name
             itemView.setOnClickListener {
-                itemClickListener.itemClick(item)
+                itemClickListener(item)
             }
         }
     }
 
-    // ClickListenerの定義
-    interface OnItemClickListener {
-        fun itemClick(item: Item)
-    }
+
 
     // 新しくViewHolderを作成し、返す。
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

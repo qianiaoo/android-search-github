@@ -27,11 +27,10 @@ class OneFragment : Fragment(R.layout.fragment_one) {
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), layoutManager.orientation)
-        val adapter = ItemAdapter(object : ItemAdapter.OnItemClickListener {
-            override fun itemClick(item: Item) {
-                gotoRepositoryFragment(item)
-            }
-        })
+        // lambdaでclickListener関数を渡す
+        val adapter = ItemAdapter {
+            gotoRepositoryFragment(it) // 次のページに行く
+        }
 
 
         fun handleSearchAction(editText: TextView, action: Int): Boolean {
