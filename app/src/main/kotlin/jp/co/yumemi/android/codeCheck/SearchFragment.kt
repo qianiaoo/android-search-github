@@ -25,6 +25,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         ViewModelProvider.NewInstanceFactory()
     }
 
+    @Volatile
     private var searchJob: Job? = null
 
 
