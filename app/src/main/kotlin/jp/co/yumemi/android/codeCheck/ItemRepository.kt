@@ -19,6 +19,10 @@ sealed class SearchResult {
 object ItemRepository {
     private val client = HttpClient(Android)
 
+    // clientのリソースをリリースする
+    fun close() {
+        client.close()
+    }
 
     suspend fun fetchSearchResults(inputText: String): SearchResult {
 

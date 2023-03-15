@@ -37,8 +37,7 @@ class ItemViewModel(
 
         viewModelScope.launch {
             // 一時的にIOスレッドに切り替えて、itemsを取得する
-            val searchResult = ItemRepository.fetchSearchResults(inputText)
-            when (searchResult) {
+            when (val searchResult = ItemRepository.fetchSearchResults(inputText)) {
                 is SearchResult.Success -> {
                     // view層に渡されたwritten_languageでlanguageフィールドを設定
                     val updatedItems = searchResult.items.map { item ->
@@ -52,6 +51,13 @@ class ItemViewModel(
                 }
             }
         }
+    }
+
+
+    // viewModelもう使わない時に、Repositoryのclientをclose
+    override fun onCleared() {
+        super.onCleared()
+        ItemRepository.close()
     }
 }
 

@@ -88,7 +88,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     // RepositoryFragmentへ飛ぶ関数
     private fun gotoRepositoryFragment(item: Item) {
         val action =
-            SearchFragmentDirections.actionRepositoriesFragmentToRepositoryFragment(item = item)
+            SearchFragmentDirections.actionRepositoriesFragmentToRepositoryFragment(item = item) // navにitemというkeyにitemを設定(nav_graph.xml)
         findNavController().navigate(action)
     }
 }
