@@ -9,7 +9,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import coil.load
-import jp.co.yumemi.android.codeCheck.TopActivity.Companion.lastSearchDate
 import jp.co.yumemi.android.codeCheck.databinding.FragmentDetailBinding
 
 class DetailFragment : Fragment(R.layout.fragment_detail) {
@@ -21,7 +20,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("検索した日時", lastSearchDate.toString())
+        Log.d("検索した日時", AppStateManager.lastSearchDate.toString())
 
         _binding = FragmentDetailBinding.bind(view)
 
