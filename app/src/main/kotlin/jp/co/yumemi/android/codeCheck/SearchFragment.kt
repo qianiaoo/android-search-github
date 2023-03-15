@@ -5,15 +5,22 @@ package jp.co.yumemi.android.codeCheck
 
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var viewModel: ItemViewModel
+
+    private var searchJob: Job? = null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,23 +39,33 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             gotoRepositoryFragment(it) // 次のページに行く
         }
 
-        // 検索actionの対応関数
-        fun handleSearchAction(editText: TextView, action: Int): Boolean {
-            if (action == EditorInfo.IME_ACTION_SEARCH) {
-                editText.text.toString().let {
-                    val languageString = getString(R.string.written_language)
-                    viewModel.searchResults(it, languageString)
-                }
-                return true
-            }
-            return false
+        // エラーメッセージを観察する。lifeCycleはonCreateViewからonDestroyViewまで指定
+        viewModel.errorLiveData.observe(viewLifecycleOwner) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
         }
 
+        // inputに検索動作用TextWatcherを設定する、毎回inputが変わる時にデータを取得する
+        binding.searchInputText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-        // inputに検索動作用listenerを設定する
-        binding.searchInputText.setOnEditorActionListener { editText, action, _ ->
-                handleSearchAction(editText, action)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    val inputText = it.toString()
+                    val languageString = getString(R.string.written_language)
+
+                    // ユーザーが速くて連続入力する場合は前のクエリをキャンセルする
+                    searchJob?.cancel()
+
+                    // ユーザーがすぐにまた新しいのを入力する可能性があるので、0.2秒後データを取得するように
+                    searchJob = lifecycleScope.launch {
+                        delay(200) // 200ms後実行
+                        viewModel.searchResults(inputText, languageString)
+                    }
+                }
             }
+        })
 
         // recyclerViewを設定する
         binding.recyclerView.also {

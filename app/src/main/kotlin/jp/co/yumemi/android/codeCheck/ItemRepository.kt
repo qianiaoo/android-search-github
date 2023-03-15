@@ -13,48 +13,57 @@ import java.util.*
 object ItemRepository {
     private val client = HttpClient(Android)
 
+
+    class GithubFetchException(message: String) : Exception(message)
+
+
     suspend fun fetchSearchResults(inputText: String): List<Item> {
+
+
         // IOスレッドに切り替えてAPIからのデータ取得を実行する
         return withContext(Dispatchers.IO) {
-            val response: HttpResponse = client.get("https://api.github.com/search/repositories") {
-                header("Accept", "application/vnd.github.v3+json")
-                parameter("q", inputText)
-            }
-
-            val jsonBody = JSONObject(response.receive<String>())
-
-            val jsonItems = jsonBody.optJSONArray("items")!!
-
             val items = mutableListOf<Item>()
+            try {
+                val response: HttpResponse =
+                    client.get("https://api.github.com/search/repositories") {
+                        header("Accept", "application/vnd.github.v3+json")
+                        parameter("q", inputText)
+                    }
 
-            /**
-             * アイテムの個数分ループする
-             */
-            for (i in 0 until jsonItems.length()) {
-                val jsonItem = jsonItems.optJSONObject(i)!!
-                val name = jsonItem.optString("full_name")
-                val ownerIconUrl = jsonItem.optJSONObject("owner")!!.optString("avatar_url")
-                val language = jsonItem.optString("language")
-                val stargazersCount = jsonItem.optLong("stargazers_count")
-                val watchersCount = jsonItem.optLong("watchers_count")
-                val forksCount = jsonItem.optLong("forks_conut")
-                val openIssuesCount = jsonItem.optLong("open_issues_count")
+                val jsonBody = JSONObject(response.receive<String>())
 
-                items.add(
-                    Item(
-                        name = name,
-                        ownerIconUrl = ownerIconUrl,
-                        language = language,
-                        stargazersCount = stargazersCount,
-                        watchersCount = watchersCount,
-                        forksCount = forksCount,
-                        openIssuesCount = openIssuesCount
+                val jsonItems = jsonBody.optJSONArray("items")!!
+                /**
+                 * アイテムの個数分ループする
+                 */
+                for (i in 0 until jsonItems.length()) {
+                    val jsonItem = jsonItems.optJSONObject(i)!!
+                    val name = jsonItem.optString("full_name")
+                    val ownerIconUrl = jsonItem.optJSONObject("owner")!!.optString("avatar_url")
+                    val language = jsonItem.optString("language")
+                    val stargazersCount = jsonItem.optLong("stargazers_count")
+                    val watchersCount = jsonItem.optLong("watchers_count")
+                    val forksCount = jsonItem.optLong("forks_conut")
+                    val openIssuesCount = jsonItem.optLong("open_issues_count")
+
+                    items.add(
+                        Item(
+                            name = name,
+                            ownerIconUrl = ownerIconUrl,
+                            language = language,
+                            stargazersCount = stargazersCount,
+                            watchersCount = watchersCount,
+                            forksCount = forksCount,
+                            openIssuesCount = openIssuesCount
+                        )
                     )
-                )
+                }
+
+            } catch (e: Exception) {
+                throw GithubFetchException("Error fetching search results: ${e.message}")
             }
 
             TopActivity.lastSearchDate = Date()
-
             return@withContext items.toList()
         }
     }
