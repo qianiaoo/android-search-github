@@ -21,7 +21,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
 
 
 
-        Log.d("検索した日時", AppStateManager.lastSearchDate.toString())
+        Log.d("検索した日時", AppStateManager.lastSearchDate?.toString() ?: "未検索")
 
         val binding = FragmentDetailBinding.bind(view)
 
