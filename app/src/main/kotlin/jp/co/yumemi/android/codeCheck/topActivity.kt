@@ -4,8 +4,8 @@
 package jp.co.yumemi.android.codeCheck
 
 import androidx.appcompat.app.AppCompatActivity
-import java.util.*
 
+// navの器として残した
 class TopActivity : AppCompatActivity(R.layout.activity_top) {
 
 }
