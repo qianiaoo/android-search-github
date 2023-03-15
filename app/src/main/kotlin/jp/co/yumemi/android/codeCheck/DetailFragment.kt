@@ -18,15 +18,16 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
+        
         Log.d("検索した日時", AppStateManager.lastSearchDate?.toString() ?: "未検索")
 
+        // viewと紐付け
         val binding = FragmentDetailBinding.bind(view)
 
+        // navからitemを取得
         val item = args.item
 
+        // viewにデータを表示
         binding.ownerIconView.load(item.ownerIconUrl)
         binding.nameView.text = item.name
         binding.languageView.text = item.language
