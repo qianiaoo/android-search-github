@@ -12,13 +12,18 @@ import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
-    private lateinit var viewModel: ItemViewModel
+    // activity-ktxを使ってviewModelを初期化する
+    private val viewModel: ItemViewModel by viewModels {
+        ViewModelProvider.NewInstanceFactory()
+    }
 
     private var searchJob: Job? = null
 
@@ -28,8 +33,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         // viewと紐付ける
         val binding = FragmentSearchBinding.bind(view)
-        // ItemRepositoryでItemViewModalを初期化する
-        viewModel = ItemViewModel()
 
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
