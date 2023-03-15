@@ -11,16 +11,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
-import jp.co.yumemi.android.codeCheck.databinding.FragmentOneBinding
+import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
 
-class OneFragment : Fragment(R.layout.fragment_one) {
+class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var viewModel: ItemViewModel
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentOneBinding.bind(view)
+        val binding = FragmentSearchBinding.bind(view)
         val itemRepository = ItemRepository()
         viewModel = ItemViewModel(itemRepository)
 
@@ -61,8 +61,8 @@ class OneFragment : Fragment(R.layout.fragment_one) {
     }
 
 
-    fun gotoRepositoryFragment(item: Item) {
-        val action = OneFragmentDirections
+    private fun gotoRepositoryFragment(item: Item) {
+        val action = SearchFragmentDirections
             .actionRepositoriesFragmentToRepositoryFragment(item = item)
         findNavController().navigate(action)
     }
