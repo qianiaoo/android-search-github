@@ -24,7 +24,7 @@ import java.util.*
  * TwoFragment で使う
  */
 class ItemViewModel(
-    val context: Context,
+    private val itemRepository: ItemRepository
 ) : ViewModel() {
 
 
@@ -32,60 +32,15 @@ class ItemViewModel(
     val searchResultsLiveData: LiveData<List<Item>> get() = _searchResultsLiveData
 
 
-    // 検索结果
-    fun searchResults(inputText: String) {
+    // 検索結果
+    fun searchResults(inputText: String, languageString: String) {
         viewModelScope.launch {
-            val items = fetchSearchResults(inputText)
-            _searchResultsLiveData.postValue(items)
-        }
-    }
-
-
-
-    private suspend fun fetchSearchResults(inputText: String): List<Item> {
-        val client = HttpClient(Android)
-
-        return withContext(Dispatchers.IO) {
-            val response: HttpResponse = client.get("https://api.github.com/search/repositories") {
-                header("Accept", "application/vnd.github.v3+json")
-                parameter("q", inputText)
+            val items = itemRepository.fetchSearchResults(inputText)
+            // view層に渡されたwritten_languageでlanguageフィールドを設定
+            val updatedItems = items.map { item ->
+                item.copy(language = languageString.format(item.language))
             }
-
-            val jsonBody = JSONObject(response.receive<String>())
-
-            val jsonItems = jsonBody.optJSONArray("items")!!
-
-            val items = mutableListOf<Item>()
-
-            /**
-             * アイテムの個数分ループする
-             */
-            for (i in 0 until jsonItems.length()) {
-                val jsonItem = jsonItems.optJSONObject(i)!!
-                val name = jsonItem.optString("full_name")
-                val ownerIconUrl = jsonItem.optJSONObject("owner")!!.optString("avatar_url")
-                val language = jsonItem.optString("language")
-                val stargazersCount = jsonItem.optLong("stargazers_count")
-                val watchersCount = jsonItem.optLong("watchers_count")
-                val forksCount = jsonItem.optLong("forks_conut")
-                val openIssuesCount = jsonItem.optLong("open_issues_count")
-
-                items.add(
-                    Item(
-                        name = name,
-                        ownerIconUrl = ownerIconUrl,
-                        language = context.getString(R.string.written_language, language),
-                        stargazersCount = stargazersCount,
-                        watchersCount = watchersCount,
-                        forksCount = forksCount,
-                        openIssuesCount = openIssuesCount
-                    )
-                )
-            }
-
-            lastSearchDate = Date()
-
-            return@withContext items.toList()
+            _searchResultsLiveData.postValue(updatedItems)
         }
     }
 

@@ -23,8 +23,8 @@ class OneFragment : Fragment(R.layout.fragment_one) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentOneBinding.bind(view)
-
-        viewModel = ItemViewModel(requireContext())
+        val itemRepository = ItemRepository()
+        viewModel = ItemViewModel(itemRepository)
 
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
@@ -36,10 +36,12 @@ class OneFragment : Fragment(R.layout.fragment_one) {
         })
 
 
+
         fun handleSearchAction(editText: TextView, action: Int): Boolean {
             if (action == EditorInfo.IME_ACTION_SEARCH) {
                 editText.text.toString().let {
-                    viewModel.searchResults(it)
+                    val languageString = getString(R.string.written_language)
+                    viewModel.searchResults(it, languageString)
                 }
                 return true
             }
