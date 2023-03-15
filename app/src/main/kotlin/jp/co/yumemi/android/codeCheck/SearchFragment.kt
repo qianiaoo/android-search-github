@@ -12,9 +12,15 @@ import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var viewModel: ItemViewModel
+
+    private var searchJob: Job? = null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,9 +52,17 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    val searchText = it.toString()
+                    val inputText = it.toString()
                     val languageString = getString(R.string.written_language)
-                    viewModel.searchResults(searchText, languageString)
+
+                    // ユーザーが速くて連続入力する場合は前のクエリをキャンセルする
+                    searchJob?.cancel()
+
+                    // ユーザーがすぐにまた新しいのを入力する可能性があるので、0.2秒後データを取得するように
+                    searchJob = lifecycleScope.launch {
+                        delay(200) // 200ms後実行
+                        viewModel.searchResults(inputText, languageString)
+                    }
                 }
             }
         })
