@@ -5,6 +5,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -20,9 +21,8 @@ object ItemRepository {
     private val client = HttpClient(Android)
 
     // clientのリソースをリリースする
-    fun close() {
-        client.close()
-    }
+    fun close() = client.close()
+
 
     suspend fun fetchSearchResults(inputText: String): SearchResult {
 
@@ -37,8 +37,9 @@ object ItemRepository {
                         parameter("q", inputText)
                     }
 
-                val jsonBody = JSONObject(response.receive<String>())
+                if (response.status != HttpStatusCode.OK) return@withContext SearchResult.Failure("リクエスト失敗しました。少し休憩しましょう。[${response.status}]")
 
+                val jsonBody = JSONObject(response.receive<String>())
                 val jsonItems = jsonBody.optJSONArray("items")!!
                 /**
                  * アイテムの個数分ループする
@@ -70,7 +71,7 @@ object ItemRepository {
                 SearchResult.Success(items)
 
             } catch (e: Exception) {
-                SearchResult.Failure("Error fetching search results: ${e.message}")
+                SearchResult.Failure("エラーが発生しました。@qianiaooまで連絡してください。：${e.message}")
             }
         }
     }
