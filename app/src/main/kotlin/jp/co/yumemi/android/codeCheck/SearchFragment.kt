@@ -5,12 +5,12 @@ package jp.co.yumemi.android.codeCheck
 
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
+import android.text.Editable
+import android.text.TextWatcher
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var viewModel: ItemViewModel
@@ -32,23 +32,21 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             gotoRepositoryFragment(it) // 次のページに行く
         }
 
-        // 検索actionの対応関数
-        fun handleSearchAction(editText: TextView, action: Int): Boolean {
-            if (action == EditorInfo.IME_ACTION_SEARCH) {
-                editText.text.toString().let {
+
+        // inputに検索動作用TextWatcherを設定する、毎回inputが変わる時にデータを取得する
+        binding.searchInputText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    val searchText = it.toString()
                     val languageString = getString(R.string.written_language)
-                    viewModel.searchResults(it, languageString)
+                    viewModel.searchResults(searchText, languageString)
                 }
-                return true
             }
-            return false
-        }
-
-
-        // inputに検索動作用listenerを設定する
-        binding.searchInputText.setOnEditorActionListener { editText, action, _ ->
-                handleSearchAction(editText, action)
-            }
+        })
 
         // recyclerViewを設定する
         binding.recyclerView.also {
