@@ -15,7 +15,6 @@ import kotlinx.parcelize.Parcelize
  * TwoFragment で使う
  */
 class ItemViewModel(
-    private val itemRepository: ItemRepository
 ) : ViewModel() {
 
     // 内部記録用長さ可変リスト
@@ -28,7 +27,7 @@ class ItemViewModel(
     fun searchResults(inputText: String, languageString: String) {
         viewModelScope.launch {
             // 一時的にIOスレッドに切り替えて、itemsを取得する
-            val items = itemRepository.fetchSearchResults(inputText)
+            val items = ItemRepository.fetchSearchResults(inputText)
             // view層に渡されたwritten_languageでlanguageフィールドを設定
             val updatedItems = items.map { item ->
                 item.copy(language = languageString.format(item.language))

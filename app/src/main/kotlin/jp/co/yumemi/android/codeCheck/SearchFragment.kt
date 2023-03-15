@@ -21,9 +21,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         // viewと紐付ける
         val binding = FragmentSearchBinding.bind(view)
-        // ItemRepositoryを初期化する
-        val itemRepository = ItemRepository()
-        viewModel = ItemViewModel(itemRepository)
+        // ItemRepositoryでItemViewModalを初期化する
+        viewModel = ItemViewModel()
 
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =

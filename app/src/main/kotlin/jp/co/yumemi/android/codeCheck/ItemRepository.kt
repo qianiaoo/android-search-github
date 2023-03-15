@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.*
 
-class ItemRepository {
+object ItemRepository {
     private val client = HttpClient(Android)
 
     suspend fun fetchSearchResults(inputText: String): List<Item> {
