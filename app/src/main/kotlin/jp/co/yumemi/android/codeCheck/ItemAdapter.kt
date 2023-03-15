@@ -42,7 +42,7 @@ class ItemAdapter(
 
 
 // itemの比較と更新用
-val diffUtil = object : DiffUtil.ItemCallback<Item>() {
+private val diffUtil = object : DiffUtil.ItemCallback<Item>() {
     override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
         return oldItem.name == newItem.name
     }

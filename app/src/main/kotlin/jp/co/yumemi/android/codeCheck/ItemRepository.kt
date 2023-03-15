@@ -10,14 +10,17 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.*
 
+// 検索結果を定義するsealed class
+sealed class SearchResult {
+    data class Success(val items: List<Item>) : SearchResult()
+    data class Failure(val message: String) : SearchResult()
+}
+
 object ItemRepository {
     private val client = HttpClient(Android)
 
 
-    class GithubFetchException(message: String) : Exception(message)
-
-
-    suspend fun fetchSearchResults(inputText: String): List<Item> {
+    suspend fun fetchSearchResults(inputText: String): SearchResult {
 
 
         // IOスレッドに切り替えてAPIからのデータ取得を実行する
@@ -58,13 +61,13 @@ object ItemRepository {
                         )
                     )
                 }
+                AppStateManager.lastSearchDate = Date()
+
+                SearchResult.Success(items)
 
             } catch (e: Exception) {
-                throw GithubFetchException("Error fetching search results: ${e.message}")
+                SearchResult.Failure("Error fetching search results: ${e.message}")
             }
-
-            AppStateManager.lastSearchDate = Date()
-            return@withContext items.toList()
         }
     }
 }

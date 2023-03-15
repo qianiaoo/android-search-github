@@ -12,14 +12,20 @@ import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
-    private lateinit var viewModel: ItemViewModel
+    // activity-ktxを使ってviewModelを初期化する
+    private val viewModel: ItemViewModel by viewModels {
+        ViewModelProvider.NewInstanceFactory()
+    }
 
+    @Volatile
     private var searchJob: Job? = null
 
 
@@ -28,8 +34,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         // viewと紐付ける
         val binding = FragmentSearchBinding.bind(view)
-        // ItemRepositoryでItemViewModalを初期化する
-        viewModel = ItemViewModel()
 
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
@@ -57,10 +61,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
                     // ユーザーが速くて連続入力する場合は前のクエリをキャンセルする
                     searchJob?.cancel()
-
+                    val delayTime = 200L
                     // ユーザーがすぐにまた新しいのを入力する可能性があるので、0.2秒後データを取得するように
                     searchJob = lifecycleScope.launch {
-                        delay(200) // 200ms後実行
+                        delay(delayTime) // 200ms後実行
                         viewModel.searchResults(inputText, languageString)
                     }
                 }
