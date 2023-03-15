@@ -57,10 +57,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
                     // ユーザーが速くて連続入力する場合は前のクエリをキャンセルする
                     searchJob?.cancel()
-
+                    val delayTime = 200L
                     // ユーザーがすぐにまた新しいのを入力する可能性があるので、0.2秒後データを取得するように
                     searchJob = lifecycleScope.launch {
-                        delay(200) // 200ms後実行
+                        delay(delayTime) // 200ms後実行
                         viewModel.searchResults(inputText, languageString)
                     }
                 }
