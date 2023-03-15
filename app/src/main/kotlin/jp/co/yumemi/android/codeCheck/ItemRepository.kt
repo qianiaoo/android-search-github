@@ -63,7 +63,7 @@ object ItemRepository {
                 throw GithubFetchException("Error fetching search results: ${e.message}")
             }
 
-            TopActivity.lastSearchDate = Date()
+            AppStateManager.lastSearchDate = Date()
             return@withContext items.toList()
         }
     }
