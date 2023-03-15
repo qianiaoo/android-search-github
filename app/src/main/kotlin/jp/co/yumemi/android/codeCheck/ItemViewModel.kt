@@ -9,16 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import jp.co.yumemi.android.codeCheck.TopActivity.Companion.lastSearchDate
 import kotlinx.coroutines.*
 import kotlinx.parcelize.Parcelize
-import org.json.JSONObject
-import java.util.*
 
 /**
  * TwoFragment で使う
@@ -43,8 +35,6 @@ class ItemViewModel(
             _searchResultsLiveData.postValue(updatedItems)
         }
     }
-
-
 }
 
 @Parcelize

@@ -4,9 +4,7 @@
 package jp.co.yumemi.android.codeCheck
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -29,12 +27,11 @@ class OneFragment : Fragment(R.layout.fragment_one) {
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
             DividerItemDecoration(requireContext(), layoutManager.orientation)
-        val adapter = CustomAdapter(object : CustomAdapter.OnItemClickListener {
+        val adapter = ItemAdapter(object : ItemAdapter.OnItemClickListener {
             override fun itemClick(item: Item) {
                 gotoRepositoryFragment(item)
             }
         })
-
 
 
         fun handleSearchAction(editText: TextView, action: Int): Boolean {
@@ -72,41 +69,3 @@ class OneFragment : Fragment(R.layout.fragment_one) {
     }
 }
 
-val diffUtil = object : DiffUtil.ItemCallback<Item>() {
-    override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
-        return oldItem.name == newItem.name
-    }
-
-    override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
-        return oldItem == newItem
-    }
-
-}
-
-class CustomAdapter(
-    private val itemClickListener: OnItemClickListener,
-) : ListAdapter<Item, CustomAdapter.ViewHolder>(diffUtil) {
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val repositoryNameView: TextView = view.findViewById(R.id.repositoryNameView)
-    }
-
-    interface OnItemClickListener {
-        fun itemClick(item: Item)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.layout_item, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.repositoryNameView.text = item.name
-
-        holder.itemView.setOnClickListener {
-            itemClickListener.itemClick(item)
-        }
-    }
-}
