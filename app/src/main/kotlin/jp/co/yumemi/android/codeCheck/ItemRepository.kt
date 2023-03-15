@@ -20,6 +20,8 @@ sealed class SearchResult {
 object ItemRepository {
     private val client = HttpClient(Android)
 
+    const val GITHUB_API_URL = "https://api.github.com/search/repositories"
+
     // clientのリソースをリリースする
     fun close() = client.close()
 
@@ -32,7 +34,7 @@ object ItemRepository {
             val items = mutableListOf<Item>()
             try {
                 val response: HttpResponse =
-                    client.get("https://api.github.com/search/repositories") {
+                    client.get(GITHUB_API_URL) {
                         header("Accept", "application/vnd.github.v3+json")
                         parameter("q", inputText)
                     }
