@@ -25,6 +25,13 @@ class ItemViewModel(
 
     // 検索結果
     fun searchResults(inputText: String, languageString: String) {
+
+        // 検索のキーワードがからの場合は検索しない
+        if (inputText.isBlank()) {
+            _searchResultsLiveData.postValue(emptyList())
+            return
+        }
+
         viewModelScope.launch {
             // 一時的にIOスレッドに切り替えて、itemsを取得する
             val items = ItemRepository.fetchSearchResults(inputText)
