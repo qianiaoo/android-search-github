@@ -76,7 +76,9 @@ class CustomAdapter(
     private val itemClickListener: OnItemClickListener,
 ) : ListAdapter<Item, CustomAdapter.ViewHolder>(diffUtil) {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val repositoryNameView: TextView = view.findViewById(R.id.repositoryNameView)
+    }
 
     interface OnItemClickListener {
         fun itemClick(item: Item)
@@ -90,8 +92,7 @@ class CustomAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        (holder.itemView.findViewById<View>(R.id.repositoryNameView) as TextView).text =
-            item.name
+        holder.repositoryNameView.text = item.name
 
         holder.itemView.setOnClickListener {
             itemClickListener.itemClick(item)
