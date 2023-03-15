@@ -24,7 +24,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
         // viewと紐付け
         val binding = FragmentDetailBinding.bind(view)
 
-        // navからitemを取得
+        // navからitemを取得(nav_graph)
         val item = args.item
 
         // viewにデータを表示
