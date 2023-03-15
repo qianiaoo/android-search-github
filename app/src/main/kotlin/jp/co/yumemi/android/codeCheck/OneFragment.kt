@@ -33,17 +33,22 @@ class OneFragment : Fragment(R.layout.fragment_one) {
             }
         })
 
+
+        fun handleSearchAction(editText: TextView, action: Int): Boolean {
+            if (action == EditorInfo.IME_ACTION_SEARCH) {
+                editText.text.toString().let {
+                    viewModel.searchResults(it).apply {
+                        adapter.submitList(this)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
         binding.searchInputText
             .setOnEditorActionListener { editText, action, _ ->
-                if (action == EditorInfo.IME_ACTION_SEARCH) {
-                    editText.text.toString().let {
-                        viewModel.searchResults(it).apply {
-                            adapter.submitList(this)
-                        }
-                    }
-                    return@setOnEditorActionListener true
-                }
-                return@setOnEditorActionListener false
+                handleSearchAction(editText, action)
             }
 
         binding.recyclerView.also {
