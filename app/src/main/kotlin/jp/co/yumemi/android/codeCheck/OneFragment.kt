@@ -10,11 +10,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import jp.co.yumemi.android.codeCheck.databinding.FragmentOneBinding
 
 class OneFragment : Fragment(R.layout.fragment_one) {
+    private lateinit var viewModel: ItemViewModel
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -22,7 +24,7 @@ class OneFragment : Fragment(R.layout.fragment_one) {
 
         val binding = FragmentOneBinding.bind(view)
 
-        val viewModel = ItemViewModel(requireContext())
+        viewModel = ItemViewModel(requireContext())
 
         val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
@@ -37,9 +39,7 @@ class OneFragment : Fragment(R.layout.fragment_one) {
         fun handleSearchAction(editText: TextView, action: Int): Boolean {
             if (action == EditorInfo.IME_ACTION_SEARCH) {
                 editText.text.toString().let {
-                    viewModel.searchResults(it).apply {
-                        adapter.submitList(this)
-                    }
+                    viewModel.searchResults(it)
                 }
                 return true
             }
@@ -56,6 +56,10 @@ class OneFragment : Fragment(R.layout.fragment_one) {
             it.addItemDecoration(dividerItemDecoration)
             it.adapter = adapter
         }
+
+        viewModel.searchResultsLiveData.observe(viewLifecycleOwner, Observer { results ->
+            adapter.submitList(results)
+        })
     }
 
 
