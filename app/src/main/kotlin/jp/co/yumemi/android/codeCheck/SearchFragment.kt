@@ -19,7 +19,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // viewと紐付ける
         val binding = FragmentSearchBinding.bind(view)
+        // ItemRepositoryを初期化する
         val itemRepository = ItemRepository()
         viewModel = ItemViewModel(itemRepository)
 
@@ -31,7 +33,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             gotoRepositoryFragment(it) // 次のページに行く
         }
 
-
+        // 検索actionの対応関数
         fun handleSearchAction(editText: TextView, action: Int): Boolean {
             if (action == EditorInfo.IME_ACTION_SEARCH) {
                 editText.text.toString().let {
@@ -43,26 +45,30 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             return false
         }
 
-        binding.searchInputText
-            .setOnEditorActionListener { editText, action, _ ->
+
+        // inputに検索動作用listenerを設定する
+        binding.searchInputText.setOnEditorActionListener { editText, action, _ ->
                 handleSearchAction(editText, action)
             }
 
+        // recyclerViewを設定する
         binding.recyclerView.also {
             it.layoutManager = layoutManager
             it.addItemDecoration(dividerItemDecoration)
             it.adapter = adapter
         }
 
+        // LiveDataのデータの変化を観察して、view(adapter)に更新する
         viewModel.searchResultsLiveData.observe(viewLifecycleOwner) { results ->
             adapter.submitList(results)
         }
     }
 
 
+    // RepositoryFragmentへ飛ぶ関数
     private fun gotoRepositoryFragment(item: Item) {
-        val action = SearchFragmentDirections
-            .actionRepositoriesFragmentToRepositoryFragment(item = item)
+        val action =
+            SearchFragmentDirections.actionRepositoriesFragmentToRepositoryFragment(item = item)
         findNavController().navigate(action)
     }
 }

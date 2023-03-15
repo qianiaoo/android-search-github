@@ -14,6 +14,7 @@ class ItemRepository {
     private val client = HttpClient(Android)
 
     suspend fun fetchSearchResults(inputText: String): List<Item> {
+        // IOスレッドに切り替えてAPIからのデータ取得を実行する
         return withContext(Dispatchers.IO) {
             val response: HttpResponse = client.get("https://api.github.com/search/repositories") {
                 header("Accept", "application/vnd.github.v3+json")
@@ -25,10 +26,6 @@ class ItemRepository {
             val jsonItems = jsonBody.optJSONArray("items")!!
 
             val items = mutableListOf<Item>()
-
-            /**
-             * アイテムの個数分ループする
-             */
 
             /**
              * アイテムの個数分ループする

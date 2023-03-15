@@ -3,7 +3,6 @@
  */
 package jp.co.yumemi.android.codeCheck
 
-import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,14 +18,16 @@ class ItemViewModel(
     private val itemRepository: ItemRepository
 ) : ViewModel() {
 
-
+    // 内部記録用長さ可変リスト
     private val _searchResultsLiveData = MutableLiveData<List<Item>>()
+    // 外部用長さ固定List
     val searchResultsLiveData: LiveData<List<Item>> get() = _searchResultsLiveData
 
 
     // 検索結果
     fun searchResults(inputText: String, languageString: String) {
         viewModelScope.launch {
+            // 一時的にIOスレッドに切り替えて、itemsを取得する
             val items = itemRepository.fetchSearchResults(inputText)
             // view層に渡されたwritten_languageでlanguageフィールドを設定
             val updatedItems = items.map { item ->
@@ -37,6 +38,7 @@ class ItemViewModel(
     }
 }
 
+// 一つのgithub レポジトリに相当するClass
 @Parcelize
 data class Item(
     val name: String,
