@@ -22,28 +22,33 @@ class OneFragment : Fragment(R.layout.fragment_one) {
 
         val binding = FragmentOneBinding.bind(view)
 
-        val viewModel = OneViewModel(context!!)
+        val viewModel = ItemViewModel(requireContext())
 
-        val layoutManager = LinearLayoutManager(context!!)
+        val layoutManager = LinearLayoutManager(requireContext())
         val dividerItemDecoration =
-            DividerItemDecoration(context!!, layoutManager.orientation)
+            DividerItemDecoration(requireContext(), layoutManager.orientation)
         val adapter = CustomAdapter(object : CustomAdapter.OnItemClickListener {
             override fun itemClick(item: Item) {
                 gotoRepositoryFragment(item)
             }
         })
 
+
+        fun handleSearchAction(editText: TextView, action: Int): Boolean {
+            if (action == EditorInfo.IME_ACTION_SEARCH) {
+                editText.text.toString().let {
+                    viewModel.searchResults(it).apply {
+                        adapter.submitList(this)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
         binding.searchInputText
             .setOnEditorActionListener { editText, action, _ ->
-                if (action == EditorInfo.IME_ACTION_SEARCH) {
-                    editText.text.toString().let {
-                        viewModel.searchResults(it).apply {
-                            adapter.submitList(this)
-                        }
-                    }
-                    return@setOnEditorActionListener true
-                }
-                return@setOnEditorActionListener false
+                handleSearchAction(editText, action)
             }
 
         binding.recyclerView.also {
@@ -61,7 +66,7 @@ class OneFragment : Fragment(R.layout.fragment_one) {
     }
 }
 
-val diff_util = object : DiffUtil.ItemCallback<Item>() {
+val diffUtil = object : DiffUtil.ItemCallback<Item>() {
     override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
         return oldItem.name == newItem.name
     }
@@ -74,9 +79,11 @@ val diff_util = object : DiffUtil.ItemCallback<Item>() {
 
 class CustomAdapter(
     private val itemClickListener: OnItemClickListener,
-) : ListAdapter<Item, CustomAdapter.ViewHolder>(diff_util) {
+) : ListAdapter<Item, CustomAdapter.ViewHolder>(diffUtil) {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val repositoryNameView: TextView = view.findViewById(R.id.repositoryNameView)
+    }
 
     interface OnItemClickListener {
         fun itemClick(item: Item)
@@ -90,8 +97,7 @@ class CustomAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        (holder.itemView.findViewById<View>(R.id.repositoryNameView) as TextView).text =
-            item.name
+        holder.repositoryNameView.text = item.name
 
         holder.itemView.setOnClickListener {
             itemClickListener.itemClick(item)
