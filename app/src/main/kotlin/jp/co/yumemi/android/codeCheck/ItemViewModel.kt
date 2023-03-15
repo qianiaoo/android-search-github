@@ -36,17 +36,20 @@ class ItemViewModel(
         }
 
         viewModelScope.launch {
-            try {
-                // 一時的にIOスレッドに切り替えて、itemsを取得する
-                val items = ItemRepository.fetchSearchResults(inputText)
-                // view層に渡されたwritten_languageでlanguageフィールドを設定
-                val updatedItems = items.map { item ->
-                    item.copy(language = languageString.format(item.language))
+            // 一時的にIOスレッドに切り替えて、itemsを取得する
+            val searchResult = ItemRepository.fetchSearchResults(inputText)
+            when (searchResult) {
+                is SearchResult.Success -> {
+                    // view層に渡されたwritten_languageでlanguageフィールドを設定
+                    val updatedItems = searchResult.items.map { item ->
+                        item.copy(language = languageString.format(item.language))
+                    }
+                    _searchResultsLiveData.postValue(updatedItems)
                 }
-                _searchResultsLiveData.postValue(updatedItems)
-            } catch (e: ItemRepository.GithubFetchException) {
-                // 外部にエラーメッセージを通知
-                _errorLiveData.postValue(e.message)
+                is SearchResult.Failure -> {
+                    // 外部にエラーメッセージを通知
+                    _errorLiveData.postValue(searchResult.message)
+                }
             }
         }
     }
