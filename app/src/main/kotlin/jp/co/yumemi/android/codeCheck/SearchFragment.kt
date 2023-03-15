@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.*
 import jp.co.yumemi.android.codeCheck.databinding.FragmentSearchBinding
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var viewModel: ItemViewModel
@@ -32,6 +33,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             gotoRepositoryFragment(it) // 次のページに行く
         }
 
+        // エラーメッセージを観察する。lifeCycleはonCreateViewからonDestroyViewまで指定
+        viewModel.errorLiveData.observe(viewLifecycleOwner) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+        }
 
         // inputに検索動作用TextWatcherを設定する、毎回inputが変わる時にデータを取得する
         binding.searchInputText.addTextChangedListener(object : TextWatcher {
