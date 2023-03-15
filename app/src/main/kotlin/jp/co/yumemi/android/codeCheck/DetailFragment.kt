@@ -18,7 +18,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         Log.d("検索した日時", AppStateManager.lastSearchDate?.toString() ?: "未検索")
 
         // viewと紐付け
